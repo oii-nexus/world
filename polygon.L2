@@ -1,0 +1,115 @@
+export Poly 
+ 
+  //area of simple (non-intersecting) polygon
+  //  P: #points-by-2
+  [area] P
+    X = P.c 0
+    Y = P.c 1
+    out X.slice 0 h2 * (Y.slice 1 h1) - ...
+       (X.slice 1 h1 * (Y.slice 0 h2)).sum/2.abs
+  Poly@area: area
+  
+  //get arcLen step for each vert of polygon
+  //    P: #point-by-2
+  //  returns #point vec
+  arcLen = {P -> 0, (P.slice 1 h1 - (P.slice 0 h2)^2.sumC).sqrt.cuSum}
+  Poly@arcLen: arcLen
+    
+  //resample polygon in equal arc length increments so pts of new poly
+  //are ~equally spaced
+  //    P: #point-by-2, closed poly - last point equal to first
+  //    k: #points in returned polygon
+  //returned table is k-by-2 open poly - last point not equal
+  //to first
+  [eqSpace] P k
+    if P.n < 2 .or (k < 2)
+      'original and resampled polygon must have more than 2 points'.error
+    ArcP = P #arcLen
+    DiffP = 0, (ArcP.slice 1 h1 - (ArcP.slice 0 h2))
+    step = ArcP.e h1 / k //divide by k not (k-1) since rtn open poly
+    ArcK = 0..(ArcP.e h1) step.slice 0 (k-1)
+    NewP = k,2.new
+    next = 1  
+    up i 0 (k-1) //new points
+      while 1
+        if ArcK.e i <= (ArcP.e next)
+          interp = ArcK.e i - (ArcP.e (next-1))/(DiffP.e next)
+          NewP.r i: (P.r (next-1)*(1-interp) + (P.r next*interp))
+          break
+        next = next + 1
+    out NewP
+  Poly@eqSpace: eqSpace
+  
+  //test if points in polygon
+  //    TestXY: 2-columns - points to test
+  //    VertXY: 2-columns - vertices of polygon
+  // -does not matter if vertices in clockwise or anti-clock order
+  // -only for a single polygon
+  // -last vertex can be repeated at end but not reqd
+  // -translated from: https://www.npmjs.com/package/point-in-polygon
+  [isIn] TestXY VertXY
+    **
+    var T, V, nT, nV, In, i, j, k, x, y, xi, yi, xj, yj, inside;
+    T = L2.linAlg.matrix(L2_TestXY)[0];
+    V = L2.linAlg.matrix(L2_VertXY)[0];
+    nT = T.length;
+    nV = V.length;
+    In = new Array(nT);
+    for (k=0; k<nT; k++) {
+      x = T[k][0];
+      y = T[k][1];
+      inside = false;
+      j = nV - 1;
+      for (i=0; i<nV; i++) {
+        xi = V[i][0];
+        yi = V[i][1];
+        xj = V[j][0];
+        yj = V[j][1];
+        if (((yi > y) !== (yj > y)) && (x < ((xj - xi) * (y - yi) / (yj - yi) + xi))) inside = !inside;
+        j = i }
+      In[k] = inside }
+    return new L2.ArJSA(In);
+    **
+    ~
+  Poly@isIn: isIn
+  
+  //convert geoJSON to polygon tables
+  //    X: table representing geoJSON object;
+  //       geometry types must be Polygon or MultiPolygon  
+  //    name: key of properties to use as region name,
+  //          name need not be unique - not used as keys in the result
+  //returns 2-col table, 1st col is region name, second is polygons;
+  //name can be repeated due to multipolygons or multiple entries
+  //with same name
+  [fromGeoJSON] X name
+    X = X@features[.]  
+    R = 0,2.new.keyC: ('name','coord')
+    each ent X
+      rg = ent@properties.e name
+      if ent@geometry@type == 'Polygon'
+        R`(rg,,(ent@geometry@coordinates[.][.].map {A -> A.tp}.unwrapC[]))
+      elif ent@geometry@type == 'MultiPolygon'
+        Tmp = ent@geometry@coordinates[.].map {A -> A[.].map {B -> B.tp}.unwrapC}
+        R`(rg.rep (Tmp.n),,Tmp)
+      else
+        'geometry type must be Polygon or MuliPolygon'
+    out R.order 0
+  Poly@fromGeoJSON: fromGeoJSON
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
