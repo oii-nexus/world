@@ -98,8 +98,8 @@ Ops@yTick: 0
 // Ops@xMax: 150
 // Ops@yMin: (20-)
 // Ops@yMax: 0
-Ops@pin: 1
-Ops@fontSize: 8
+// Ops@pin: 1
+// Ops@fontSize: 8
 
 //outlines and centroids
 Outline.c 1,(CentUsed[]).lineXY Ops

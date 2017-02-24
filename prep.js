@@ -98,8 +98,8 @@ L2_Ops._dPush("yTick",(0));
 
 
 
-L2_Ops._dPush("pin",(1));
-L2_Ops._dPush("fontSize",(8));
+
+
 
 
 L2.aux.plot(L2_Outline._oneDimSc("c",(1))._appendSc(((new L2.Box(L2_CentUsed))),"r"),"l",true,L2_Ops);
