@@ -1,0 +1,116 @@
+
+//---------- geography ----------
+
+Poly = 'polygon.L2'.req 'reload'
+G = 'data/map/countries.geo.json'.read.fromJSON
+
+//centroids: use largest polygon of country, uniformly spaced boundary points
+Outline = G #(Poly@fromGeoJSON) 'name'.unless 'name' 'Antarctica'
+[getCent] X
+  if X.n > 1
+    X = X.e (X.map {A -> A #(Poly@area)}.unbox.max 'index')
+  out Poly@eqSpace ## (X[.]) (X[.].n).mean
+Cent = Outline.group 'name' getCent.unwrapC
+
+//change centroid name
+Cent.key 'West Bank': 'Palestine'
+
+//change centroid position
+Cent.r 'Norway': (10,,62)
+Cent.r 'Canada': (105-,,60)
+Cent.r 'Malaysia': (102,,4)
+Cent.r 'Israel': (34.9,,30.9)
+Cent.r 'Indonesia': (110,,(7.4-))
+
+//add centroids
+Cent ... 
+  `(103.8,,1.2.key: 'Singapore') ...
+  `(114.2,,22.2.key: 'Hong Kong') ...
+  `(113.2,,22.key: 'Macao') ...
+  `(50.4,,26.key: 'Bahrain')
+
+
+//---------- UN immigrant stock data ----------//
+
+OD = 'data/immigration/UN_total_immigrant_stock_2015.csv'.loadCSV 'name' 'miss'
+OD = OD.key: (OD.c 0 'cut').sortKey.sortKeyC //note dest is in rows - we make matrix symm anyway
+if OD.key.equal (OD.keyC)!
+  'origin and destination keys not equal'.error
+
+
+//---------- combine geograpahic data and immigration data ----------//
+
+IC = OD.key
+Change = ...
+  'Bolivia (Plurinational State of)' << 'Bolivia' ...
+  'Brunei Darussalam' 'Brunei' ...
+  'Timor-Leste' 'East Timor' ...
+  'Guinea-Bissau' 'Guinea Bissau' ...
+  'Iran (Islamic Republic of)' 'Iran' ...
+  'C�te d\'Ivoire' 'Ivory Coast' ...
+  'Lao People\'s Democratic Republic' 'Laos' ...
+  'The former Yugoslav Republic of Macedonia' 'Macedonia' ...
+  'Republic of Moldova' 'Moldova' ...
+  'Democratic People\'s Republic of Korea' 'North Korea' ...
+  'Serbia' 'Republic of Serbia' ...
+  'Congo' 'Republic of the Congo' ...
+  'Russian Federation' 'Russia' ...
+  'Republic of Korea' 'South Korea' ...
+  'Syrian Arab Republic' 'Syria' ...
+  'Bahamas' 'The Bahamas' ...
+  'United Kingdom of Great Britain and Northern Ireland' 'United Kingdom' ...
+  'Venezuela (Bolivarian Republic of)' 'Venezuela' ...
+  'Viet Nam' 'Vietnam' ...
+  'China, Hong Kong Special Administrative Region' 'Hong Kong' ...
+  'China, Macao Special Administrative Region' 'Macao' ...
+  'State of Palestine' 'Palestine'
+IC.where 0 (Change.key): Change
+OD.key: IC.keyC: IC
+  
+
+//---------- threshold OD ----------//
+
+nEdge = 200
+OD.v (OD == ~.find): 0
+OD = OD.tp + OD   //make symmetric
+row i OD          //zeros on and above diagonal 
+  up j i (OD.nC - 1)
+    OD.e i j: 0
+TopInd = OD.desc 'index'.slice 0 (nEdge-1)
+Top = IC.r (OD.indR TopInd),, (IC.r (OD.indC TopInd))
+if Top.in (Cent.key).all!
+  'missing centroid'.error
+CentUsed = Cent.r (Cent.key.inter Top)
+
+
+//---------- plots ----------//
+
+Ops = <<
+Ops@linePen: (Outline.n.new 0.6, 0)
+Ops@pointRadius: (Outline.n.zero, 2)
+Ops@color: (Outline.n.new '#666', 'red')
+Ops@put: 1
+Ops@legend: 0
+Ops@borderWidth: 0
+Ops@xTick: 0
+Ops@yTick: 0
+// Ops@xMin: 100
+// Ops@xMax: 150
+// Ops@yMin: (20-)
+// Ops@yMax: 0
+Ops@pin: 1
+Ops@fontSize: 8
+
+//outlines and centroids
+Outline.c 1,(CentUsed[]).lineXY Ops
+
+//show edges
+Ops@linePen[.] ` (nEdge.new 0.6)
+Ops@pointRadius[.] ` (nEdge.zero)
+Ops@color[.] ` (nEdge.new '#0b0')
+Ops@put: 2
+Outline.c 1,(CentUsed[]),(Top.wrapC.map {A -> Cent.r (A.tp)}).lineXY Ops
+
+  
+
+

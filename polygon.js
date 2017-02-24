@@ -83,7 +83,7 @@
 
   var L2_fromGeoJSON = function(L2_X,L2_name) { if (!(L2_X instanceof L2.Ar)) L2_X = new L2.ArJSA([L2_X]); if (L2_name instanceof L2.Ar) L2_name = L2_name.v[0]; var L2_Tmp = new L2.ArJSA([undefined]);
     L2_X = L2.sc.unwrap(L2_X._dEnt("features"));
-    var L2_R = (new L2.ArSh((new L2.ArJSA([(0),(2)]))))["key:"]("c",undefined,((new L2.ArJSA(['name','coord']))));
+    var L2_R = (new L2.ArSh((new L2.ArJSA([(0),(2)]))))["key:"]("c",undefined,((new L2.ArJSA(['name','polygon']))));
     var L2_ent_index_=0; var L2_ent_limit_=L2_X.v.length; var L2_ent=L2_X.v[0]; for (;L2_ent_index_<L2_ent_limit_; L2_ent=L2_X.v[++L2_ent_index_]) {
       var L2_rg = L2.aux.openIfBox(L2.sc._dEnt(L2_ent,"properties"))._vEnt(L2_name);
       if ((L2.sc._dEnt(L2.sc._dEnt(L2_ent,"geometry"),"type")==='Polygon')) {
@@ -95,20 +95,6 @@
         'geometry type must be Polygon or MuliPolygon'; } }
     return L2_R["order"]((new L2.ArJSA([(0)]))); };
   L2_Poly._dPush("fromGeoJSON",L2_fromGeoJSON);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

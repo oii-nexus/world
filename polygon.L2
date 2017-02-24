@@ -73,17 +73,17 @@ export Poly
     ~
   Poly@isIn: isIn
   
-  //convert geoJSON to polygon tables
+  //convert geoJSON to polygons (2-col tables)
   //    X: table representing geoJSON object;
   //       geometry types must be Polygon or MultiPolygon  
   //    name: key of properties to use as region name,
-  //          name need not be unique - not used as keys in the result
-  //returns 2-col table, 1st col is region name, second is polygons;
-  //name can be repeated due to multipolygons or multiple entries
-  //with same name
+  //          name need not be unique
+  //returns 2-col table, 1st col is region names (ordered descending),
+  //second is boxed polygons; names can be repeated due to multipolygons
+  //or multiple entries with same name
   [fromGeoJSON] X name
     X = X@features[.]  
-    R = 0,2.new.keyC: ('name','coord')
+    R = 0,2.new.keyC: ('name','polygon')
     each ent X
       rg = ent@properties.e name
       if ent@geometry@type == 'Polygon'
@@ -96,20 +96,6 @@ export Poly
     out R.order 0
   Poly@fromGeoJSON: fromGeoJSON
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
 
   
