@@ -39,10 +39,13 @@ nodes=g.nodes()
 for n in n_tmp:
 	n=n["name"]
 	if not n in nodes:
-		g.add_node(n)
+		g.add_node(n,{"region":membership[n]})
+	else:
+		g.node[n]["region"]=membership[n]
 fr=nx.spring_layout(g)
 #http://networkx.readthedocs.io/en/networkx-1.10/reference/generated/networkx.drawing.layout.spring_layout.html#networkx.drawing.layout.spring_layout
 #print(fr)
+nx.write_gml(g,"immigration.gml")
 
 nodes=[]
 for n in n_tmp:
