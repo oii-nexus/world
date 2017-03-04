@@ -1,5 +1,6 @@
 library(igraph)
 library(plyr)
+library(jsonlite)
 
 graph<-read.graph("immigration.gml",format="gml")
 #V(graph)$name<-V(graph)$label
@@ -157,28 +158,59 @@ group_net
 
 
 
+
+ADJ=c(
+	"North America & Caribbean"="North American & Caribbean",
+	"South America"="South American",
+	"Europe"="European",
+	"Middle East &#38; North Africa"="Middle Eastern &#38; North African",
+	"Sub-Saharan Africa"="Sub-Saharan African",
+	"Asia"="Asian",
+	"Oceania"="Oceanian"
+)
+
+
 #####################
+#adjacency, cc, group_only, gruop_node, group_net
 
 #Adjacency/Degree (geo):
 #How many adjacency$region countries are connected to adjacency$country?
-adjacency
+x<-data.frame(question=paste0("How many <strong>",ADJ[as.character(adjacency$region)],"</strong> countries are connected to <strong>",adjacency$country,"</strong>?"),target=adjacency$country)
+toJSON(x)
+
+
 
 #Common connection
-#Which cc$region2 country has the most links to cc$region?
+#Which ADJ[cc$region2] country has the most links to cc$region1?
 cc
+cc$from<-ADJ[as.character(cc$region2)]
+cc$to<-cc$region1
+toJSON(cc[,c("from","to")])
+
 
 #Group-only
 #How many regions are connected to group_only$region countries?
 group_only
 
+#x<-data.frame(question=paste0("How many different geographic regions are connected to <strong>",ADJ[as.character(group_only$region)],"</strong> countries?"),target=group_only$region)
+#toJSON(x)
+toJSON(group_only$region)
+
 #How many countries are in group_node$region?
 group_node
+#x<-data.frame(question=paste0("How many countries are in <strong>",group_node$region,"</strong>?"),target=group_node$region)
+#toJSON(x)
+toJSON(group_node$region)
 
 #Group-Edge Tasks
 #How many connections are there between countries in group_edge$region?
 group_edge
+#x<-data.frame(question=paste0("How many connections (edges) are there between countries in <strong>",group_edge$region,"</strong>?"),target=group_edge$region)
+#toJSON(x)
+toJSON(group_edge$region)
 
 #Group-Network tasks
 #How many connections are there between group_net$from and group_net$to countries?
 group_net
+toJSON(group_net[,c("from","to")])
 
