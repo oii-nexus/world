@@ -12,10 +12,12 @@ with open("membership.csv","r") as f:
 #C=['#7fc97f','#beaed4','#fdc086','#ffff99','#386cb0','#f0027f','#bf5b17']
 #7-class Set1
 #C=['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628']
+#Edit
+#C=['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#c5c519','#a65628']
 #7-class Set3
 #C=['#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69']
 #7-class Dark2
-C=['#1b9e77','#d95f02','#7570b3','#e7298a','#66a61e','#e6ab02','#a6761d']
+#C=['#1b9e77','#d95f02','#7570b3','#e7298a','#66a61e','#e6ab02','#a6761d']
 
 COLORS={
 	"North America & Caribbean":C[0],

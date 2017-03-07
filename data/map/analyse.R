@@ -214,3 +214,17 @@ toJSON(group_edge$region)
 group_net
 toJSON(group_net[,c("from","to")])
 
+
+#Answers
+ans_adj<-data.frame(section=rep("adjacency",nrow(adjacency)),target=adjacency$country,answer=adjacency$degree)
+ans_group_only<-data.frame(section=rep("group_only",nrow(group_only)),target=group_only$region,answer=group_only$degree)
+ans_group_node<-data.frame(section=rep("group_node",nrow(group_node)),target=group_node$region,answer=group_node$count)
+ans_group_edge<-data.frame(section=rep("group_edge",nrow(group_edge)),target=group_edge$region,answer=group_edge$internal.links)
+
+ans_cc<-data.frame(section=rep("cc",nrow(cc)),target=paste0(cc$from,"--",cc$to),answer=cc$weight)
+ans_group_net<-data.frame(section=rep("group_net",nrow(group_net)),target=paste0(group_net$from,"--",group_net$to),answer=group_net$weight)
+
+
+toJSON(rbind(ans_adj,ans_group_only,ans_group_node,ans_group_edge,ans_cc,ans_group_net))
+
+
